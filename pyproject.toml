@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 pytest = "^8.3.3"
 selenium = "^4.27.0"
+webdriver-manager = "^4.0.2"
 
 
 [build-system]
