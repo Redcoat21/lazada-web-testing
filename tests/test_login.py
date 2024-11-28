@@ -5,6 +5,50 @@ from time import sleep
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
+import pytest
+
+def click_on_login_link(browser: WebDriver):
+    login_link: WebElement = browser.find_element(by=By.ID, value="anonLogin")
+    login_link.click()
+    
+def login_with_facebook(browser: WebDriver):
+    facebook_login_button: WebElement = WebDriverWait(browser, 15).until(
+        EC.presence_of_element_located((By.XPATH, "//span[text()='Facebook']"))
+    )
+    facebook_login_button.click()
+    
+def fill_facebook_email(browser: WebDriver, email: str):
+    email_field: WebElement = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.ID, "email"))
+    )
+    email_field.send_keys(email)
+    
+def fill_facebook_password(browser: WebDriver, password: str):
+    password_field: WebElement = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.ID, "pass"))
+    )
+    password_field.send_keys(password)
+    
+def facebook_login_button(browser: WebDriver):
+    login_button: WebElement = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.NAME, "login"))
+    )
+    login_button.click()
+    
+def facebook_continue_as(browser: WebDriver):
+    continue_as_button: WebElement = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//span[contains(normalize-space(.), 'Lanjutkan sebagai')]"))
+    )
+    continue_as_button.click()
+    
+def switch_to_facebook_window(browser: WebDriver):
+    WebDriverWait(browser, 10).until(lambda d: len(d.window_handles) > 1)
+    browser.switch_to.window(browser.window_handles[1])
+
+@pytest.fixture(scope="function")
+def login(browser: WebDriver):
+    click_on_login_link(browser)
+    return browser
 
 def test_login_with_facebook(browser: WebDriver):
     # Navigate to the login page
@@ -95,3 +139,24 @@ def test_login_with_facebook(browser: WebDriver):
     print("Verifying the login...")
     assert "https://www.lazada.co.id/" in browser.current_url, "User should be redirected to the homepage"
     print("Test completed successfully.")
+
+"""
+TC_012 Test the login process using an invalid Facebook account.
+Expect: The page should show an error message and shouldn't change page.
+"""
+def test_invalid_login_with_faceboko(login: WebDriver):
+    # Click on the Facebook login button
+    facebook_login_button(login)
+
+    # Switch to the Facebook login window
+    switch_to_facebook_window(login)
+
+    # Enter the email
+    email = "kendrick.sam@gmail.com"
+    fill_facebook_email(login, email)
+    
+    # Enter the password
+    password = "password"
+    fill_facebook_password(login, password)
+    
+    facebook_login_button(login)
