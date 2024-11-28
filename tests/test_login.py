@@ -84,6 +84,8 @@ def test_login_with_facebook(browser: WebDriver):
     sleep(3)  # Slow down the process
 
     # Wait for the homepage to load and verify the login
+
+    # BUG: Kayaknya yang ini problematik, soalnya text Welcome back ga bakal muncul.
     print("Waiting for the homepage to load...")
     WebDriverWait(browser, 10).until(
         EC.presence_of_element_located((By.XPATH, "//div[contains(text(), 'Welcome back')]"))
