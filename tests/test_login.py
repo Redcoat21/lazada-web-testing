@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 
+from tests.facebook import FacebookTestHelper
+
 
 class BaseTestLogin:
     browser: WebDriver
@@ -40,20 +42,13 @@ class TestGoogleLogin(BaseTestLogin):
 
 
 class TestFacebookLogin(BaseTestLogin):
+    facebook_helper: FacebookTestHelper
+
     @pytest.fixture(scope="function", autouse=True)
     def _facebook_login(self, login: WebDriver):
-        self._click_on_facebook_login_button()
+        self.facebook_helper = FacebookTestHelper(self.browser)
+        self.facebook_helper.click_on_facebook_button()
         self._switch_to_facebook_window()
-
-    def _click_on_facebook_login_button(self):
-        """
-        Click on the Facebook login button.
-        :return: None
-        """
-        facebook_login_button: WebElement = WebDriverWait(self.browser, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//span[text()='Facebook']"))
-        )
-        facebook_login_button.click()
 
     def _switch_window(self, window_index: int):
         """
@@ -95,14 +90,6 @@ class TestFacebookLogin(BaseTestLogin):
         password_field.send_keys(os.getenv(password))
 
     def _click_on_login_button(self):
-        """
-        Click on the login button IN THE FACEBOOK MODAL.
-        :return: None
-        """
-        login_button: WebElement = WebDriverWait(self.browser, 10).until(
-            EC.presence_of_element_located((By.NAME, "login"))
-        )
-        login_button.click()
 
     def test_login_with_facebook_valid(self):
         """

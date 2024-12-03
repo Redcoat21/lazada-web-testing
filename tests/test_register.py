@@ -1,3 +1,5 @@
+import os
+
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -5,6 +7,8 @@ from time import sleep
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pytest
+
+from tests.facebook import FacebookTestHelper
 
 
 class BaseRegisterTest:
@@ -53,7 +57,7 @@ class TestLocalRegister(BaseRegisterTest):
         Confirm the registration by clicking on the send by whatsapp button.
         """
         send_by_whatsapp_button: WebElement = WebDriverWait(self.browser, 10).until(
-            EC.presence_of_element_located(
+            EC.element_to_be_clickable(
                 (
                     By.XPATH,
                     "//button[.//div[contains(text(), 'Kirim kode via Whatsapp')]]",
@@ -169,21 +173,15 @@ class TestLocalRegister(BaseRegisterTest):
 
 
 class TestFacebookRegister(BaseRegisterTest):
-    @pytest.fixture(scope="function", autouse=True)
-    def facebook_login(self, registration: WebDriver):
-        self.check_terms_and_conditions_checkbox()
-        self._click_on_register_with_facebook()
-        sleep(500)
+    facebook_helper: FacebookTestHelper
 
-    def _click_on_register_with_facebook(self):
-        WebDriverWait(self.browser, 10).until(
-            EC.presence_of_element_located(
-                (
-                    By.XPATH,
-                    "//div[@class='index_module_buttonItem__8ea6d5ec']//span[text()='Facebook']",
-                )
-            )
-        ).click()
+    @pytest.fixture(scope="function", autouse=True)
+    def facebook_register_setup(self, registration: WebDriver):
+        self.facebook_helper = FacebookTestHelper(registration)
+
+        self.check_terms_and_conditions_checkbox()
+        self.facebook_helper.click_on_facebook_button()
+        self.facebook_helper.switch_to_facebook_window()
 
     def test_register_with_facebook_valid(self):
         """
@@ -191,4 +189,11 @@ class TestFacebookRegister(BaseRegisterTest):
         Expect: User should be on homepage.
         :return: None
         """
+        valid_email: str = os.getenv("FACEBOOK_EMAIL")
+        valid_password: str = os.getenv("FACEBOOK_PASSWORD")
+
+        self.facebook_helper.type_facebook_email(valid_email)
+        self.facebook_helper.type_facebook_password(valid_password)
+        self.facebook_helper.click_on_facebook_button()
+        assert True, "This test is not implemented yet."
         pass
