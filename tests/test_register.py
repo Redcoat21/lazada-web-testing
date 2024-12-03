@@ -6,54 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pytest
 
-# Helper Function Section
-
-
-def click_on_signup_link(browser: WebDriver):
-    """
-    Click on the signup link to pop up the registration modal.
-    """
-    register_link: WebElement = browser.find_element(by=By.ID, value="anonSignup")
-    register_link.click()
-
-
-def type_phone_number(browser: WebDriver, phone_number: str):
-    """
-    Type the phone number into the phone number field.
-    """
-    phone_number_field: WebElement = WebDriverWait(browser, 10).until(
-        EC.presence_of_element_located(
-            (
-                By.XPATH,
-                "//input[@class='iweb-input' and @placeholder='Enter your phone number']",
-            )
-        )
-    )
-    phone_number_field.send_keys(phone_number)
-
-
-def confirm_registration_with_whatsapp(browser: WebDriver):
-    """
-    Confirm the registration by clicking on the send by whatsapp button.
-    """
-    send_by_whatsapp_button: WebElement = WebDriverWait(browser, 10).until(
-        EC.presence_of_element_located(
-            (By.XPATH, "//button[.//div[contains(text(), 'Kirim kode via Whatsapp')]]")
-        )
-    )
-
-    send_by_whatsapp_button.click()
-
-
-def check_terms_and_conditions_checkbox(browser: WebDriver):
-    """
-    Check the terms and conditions checkbox.
-    """
-    terms_and_conditions_checkbox = browser.find_element(
-        by=By.XPATH, value="//label[contains(@class, 'iweb-checkbox')]"
-    )
-    terms_and_conditions_checkbox.click()
-
 
 # Test Section
 class TestRegister:
@@ -64,8 +16,55 @@ class TestRegister:
         """
         Fixture to ensure before every test, the registration modal is opened.
         """
-        click_on_signup_link(browser)
         self.browser = browser
+        self.click_on_signup_link()
+
+    def check_terms_and_conditions_checkbox(self):
+        """
+        Check the terms and conditions checkbox.
+        """
+        terms_and_conditions_checkbox = self.browser.find_element(
+            by=By.XPATH, value="//label[contains(@class, 'iweb-checkbox')]"
+        )
+        terms_and_conditions_checkbox.click()
+
+    def confirm_registration_with_whatsapp(self):
+        """
+        Confirm the registration by clicking on the send by whatsapp button.
+        """
+        send_by_whatsapp_button: WebElement = WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//button[.//div[contains(text(), 'Kirim kode via Whatsapp')]]",
+                )
+            )
+        )
+
+        send_by_whatsapp_button.click()
+
+    def click_on_signup_link(self):
+        """
+        Click on the signup link to pop up the registration modal.
+        """
+        register_link: WebElement = self.browser.find_element(
+            by=By.ID, value="anonSignup"
+        )
+        register_link.click()
+
+    def type_phone_number(self, phone_number: str):
+        """
+        Type the phone number into the phone number field.
+        """
+        phone_number_field: WebElement = WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//input[@class='iweb-input' and @placeholder='Enter your phone number']",
+                )
+            )
+        )
+        phone_number_field.send_keys(phone_number)
 
     @pytest.mark.skip(reason="This test is unsolvable for now.")
     def test_register_with_valid_phone_number(self) -> None:
@@ -77,11 +76,11 @@ class TestRegister:
         current_url = self.browser.current_url
 
         phone_number = "087750999479"
-        type_phone_number(self.browser, phone_number)
+        self.type_phone_number(phone_number)
 
-        check_terms_and_conditions_checkbox(self.browser)
+        self.check_terms_and_conditions_checkbox()
 
-        confirm_registration_with_whatsapp(self.browser)
+        self.confirm_registration_with_whatsapp()
 
         # Wait for maximum 10 minutes to solve captcha. If it's completed before 10 minutes, it will continue to the next step.
         self.browser.implicitly_wait(600)
@@ -101,11 +100,11 @@ class TestRegister:
         current_url = self.browser.current_url
 
         phone_number = "241424"
-        type_phone_number(self.browser, phone_number)
+        self.type_phone_number(phone_number)
 
-        check_terms_and_conditions_checkbox(self.browser)
+        self.check_terms_and_conditions_checkbox()
 
-        confirm_registration_with_whatsapp(self.browser)
+        self.confirm_registration_with_whatsapp()
 
         # Find the error toast.
         invalid_phone_number_toast: WebElement = WebDriverWait(self.browser, 10).until(
@@ -135,8 +134,8 @@ class TestRegister:
         # Look for the phone number field inside the registration modal.
         # Wait until it appear.
         phone_number = "081331413699"
-        type_phone_number(self.browser, phone_number)
-        confirm_registration_with_whatsapp(self.browser)
+        self.type_phone_number(phone_number)
+        self.confirm_registration_with_whatsapp()
 
         # Find the error toast.
         terms_and_conditions_toast: WebElement = WebDriverWait(self.browser, 10).until(
