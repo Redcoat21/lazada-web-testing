@@ -7,17 +7,30 @@ from selenium.webdriver.support import expected_conditions as EC
 import pytest
 
 
-# Test Section
-class TestRegister:
+class BaseRegisterTest:
+    """
+    Base class for the registration process.
+    """
+
     browser: WebDriver
 
     @pytest.fixture(scope="function", autouse=True)
-    def _registration(self, browser: WebDriver):
+    def registration(self, browser: WebDriver):
         """
         Fixture to ensure before every test, the registration modal is opened.
         """
         self.browser = browser
-        self.click_on_signup_link()
+        self._click_on_signup_link()
+        yield browser
+
+    def _click_on_signup_link(self):
+        """
+        Click on the signup link to pop up the registration modal.
+        """
+        register_link: WebElement = self.browser.find_element(
+            by=By.ID, value="anonSignup"
+        )
+        register_link.click()
 
     def check_terms_and_conditions_checkbox(self):
         """
@@ -27,6 +40,13 @@ class TestRegister:
             by=By.XPATH, value="//label[contains(@class, 'iweb-checkbox')]"
         )
         terms_and_conditions_checkbox.click()
+
+
+# Test Section
+class TestLocalRegister(BaseRegisterTest):
+    """
+    Test class for the registration process using phone number.
+    """
 
     def confirm_registration_with_whatsapp(self):
         """
@@ -42,15 +62,6 @@ class TestRegister:
         )
 
         send_by_whatsapp_button.click()
-
-    def click_on_signup_link(self):
-        """
-        Click on the signup link to pop up the registration modal.
-        """
-        register_link: WebElement = self.browser.find_element(
-            by=By.ID, value="anonSignup"
-        )
-        register_link.click()
 
     def type_phone_number(self, phone_number: str):
         """
@@ -155,3 +166,29 @@ class TestRegister:
         ), "URL should still stay the same."
 
         sleep(1)
+
+
+class TestFacebookRegister(BaseRegisterTest):
+    @pytest.fixture(scope="function", autouse=True)
+    def facebook_login(self, registration: WebDriver):
+        self.check_terms_and_conditions_checkbox()
+        self._click_on_register_with_facebook()
+        sleep(500)
+
+    def _click_on_register_with_facebook(self):
+        WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//div[@class='index_module_buttonItem__8ea6d5ec']//span[text()='Facebook']",
+                )
+            )
+        ).click()
+
+    def test_register_with_facebook_valid(self):
+        """
+        TC_05 Test the registration process using an unregistered and valid facebook account.
+        Expect: User should be on homepage.
+        :return: None
+        """
+        pass
