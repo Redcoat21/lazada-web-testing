@@ -1,3 +1,5 @@
+import os
+
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -6,9 +8,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pytest
 
+from tests.helper.facebook import FacebookHelper
 
-# Test Section
-class TestRegister:
+
+class BaseTestRegister:
     browser: WebDriver
 
     @pytest.fixture(scope="function", autouse=True)
@@ -19,6 +22,15 @@ class TestRegister:
         self.browser = browser
         self.click_on_signup_link()
 
+    def click_on_signup_link(self):
+        """
+        Click on the signup link to pop up the registration modal.
+        """
+        register_link: WebElement = self.browser.find_element(
+            by=By.ID, value="anonSignup"
+        )
+        register_link.click()
+
     def check_terms_and_conditions_checkbox(self):
         """
         Check the terms and conditions checkbox.
@@ -27,6 +39,9 @@ class TestRegister:
             by=By.XPATH, value="//label[contains(@class, 'iweb-checkbox')]"
         )
         terms_and_conditions_checkbox.click()
+
+# Test Section
+class TestLocalRegister(BaseTestRegister):
 
     def confirm_registration_with_whatsapp(self):
         """
@@ -43,14 +58,6 @@ class TestRegister:
 
         send_by_whatsapp_button.click()
 
-    def click_on_signup_link(self):
-        """
-        Click on the signup link to pop up the registration modal.
-        """
-        register_link: WebElement = self.browser.find_element(
-            by=By.ID, value="anonSignup"
-        )
-        register_link.click()
 
     def type_phone_number(self, phone_number: str):
         """
@@ -67,7 +74,7 @@ class TestRegister:
         phone_number_field.send_keys(phone_number)
 
     @pytest.mark.skip(reason="This test is unsolvable for now.")
-    def test_register_with_valid_phone_number(self) -> None:
+    def test_register_valid_nomer(self) -> None:
         # TODO: Find a way to solve OTP, and reusing the phone number. Captcha is solved through extension.
         """
         TC_01  Test the registration process using a valid phone number and checking the terms and conditions checkbox.
@@ -92,7 +99,7 @@ class TestRegister:
 
         assert False, "This test is unsolvable for now."
 
-    def test_register_with_invalid_phone_number(self) -> None:
+    def test_register_invalid_nomer(self) -> None:
         """
         TC_02 Test the registration process using an invalid phone number and checking the terms and conditions checkbox.
         Expect: The page should not change.
@@ -122,7 +129,7 @@ class TestRegister:
 
         sleep(1)
 
-    def test_register_with_unchecked_terms_and_conditions(self) -> None:
+    def test_register_invalid(self) -> None:
         """
         TC_03 Test the registration process using either a valid or invalid phone number without checking the terms and conditions checkbox.
         Expect: The page should not change.
@@ -155,3 +162,28 @@ class TestRegister:
         ), "URL should still stay the same."
 
         sleep(1)
+
+class TestFacebookRegister(BaseTestRegister):
+    facebook_helper: FacebookHelper
+    @pytest.fixture(scope="function", autouse=True)
+    def facebook_register(self):
+        self.facebook_helper = FacebookHelper(self.browser)
+        self.check_terms_and_conditions_checkbox()
+        self.facebook_helper.click_on_facebook_button()
+
+    def test_register_facebook_valid(self):
+        # Wait until the facebook window appear.
+        WebDriverWait(self.browser, 15).until(lambda d: len(d.window_handles) > 1)
+
+        # Switch to the facebook window.
+        self.browser.switch_to.window(self.browser.window_handles[1])
+
+        facebook_email: str = os.getenv("FACEBOOK_EMAIL")
+        facebook_password: str = os.getenv("FACEBOOK_PASSWORD")
+
+        self.facebook_helper.type_email(facebook_email)
+        self.facebook_helper.type_password(facebook_password)
+        self.facebook_helper.click_login_button()
+        self.facebook_helper.click_continue_as_button()
+        sleep(10)
+        assert True == True
