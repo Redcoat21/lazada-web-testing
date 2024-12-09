@@ -16,11 +16,11 @@ load_dotenv()
 @pytest.fixture(scope="function", autouse=True)
 def browser() -> Generator[WebDriver, None, None]:
     options = Options()
-    options.headless = True
+    options.headless = False
     extension_path = os.getenv("CAPTCHA_SOLVER_EXTENSION_PATH")
     service = Service(GeckoDriverManager().install())
     driver = webdriver.Firefox(service=service, options=options)
-    # driver.install_addon(extension_path, temporary=True)
+    driver.install_addon(extension_path, temporary=True)
 
     base_url = "https://lazada.co.id"
 
