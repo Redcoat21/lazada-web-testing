@@ -1,3 +1,2 @@
 [tools]
-poetry = "1.8.4"
-python = "3.12"
+java = "22"
