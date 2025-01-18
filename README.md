@@ -12,7 +12,7 @@ This is a project to test Lazada website, Lazada is an online shopping platform 
 
 2. **Install Dependencies:**
    ```bash
-   pip install -r requirements.txt
+   ./gradlew build
    ```
 
 3. **Set Up Environment Variables:**
@@ -20,31 +20,28 @@ This is a project to test Lazada website, Lazada is an online shopping platform 
      ```bash
      cp .env.example .env
      ```
-   - Open the `.env` file and update the following variables:
-     ```plaintext
-     FACEBOOK_EMAIL=your_facebook_email@example.com
-     FACEBOOK_PASSWORD=your_facebook_password
-     CAPTCHA_SOLVER_EXTENSION_PATH='extensions/{2f67aecb-5dac-4f76-9378-0ac4f2bedc9c}.xpi'
-     ```
+   - Notes for the environment variables:
+     - `USE_LOCAL_BROWSER` should be set into either true or false. This variable is used to determine whether to use local browser or remote browser.
+     - Note that when `USE_LOCAL_BROWSER` is set to false, it will use selenoid or an existing web driver.
+     - `BROWSER_TYPE` should be either `chrome` or `firefox` or `edge`. This variable is used to determine the browser type.
+     - When in doubt, just set `BROWSER_TYPE` to `firefox` and `USE_LOCAL_BROWSER` to `true`.
 
+4. **Build the project**
+    ```bash
+    ./gradlew build
+    ```
+   
 4. **Run the Tests:**
    ```bash
-   py -3.12 -m pytest tests/test_login.py
+   ./gradlew test
    ```
 
 ## Project Structure
 
-- `tests/`: Contains all the test scripts.
-  - `test_login.py`: Tests the login functionality using Facebook.
-  - `test_register.py`: Tests the registration functionality.
-- `extensions/`: Contains the captcha solver extension.
-  - `{2f67aecb-5dac-4f76-9378-0ac4f2bedc9c}.xpi`: Captcha solver extension for Selenium.
+- `src/test/kotlin`: Contains all the tests.
+  - `src/test/com/softwaretesting/helper`: Contain helper class for the test.
+  - `src/test/com/softwaretesting/lazadawebtesting`: Contain the test class.
 - `README.md`: This file.
-- `requirements.txt`: Lists all the Python dependencies.
 - `.env.example`: Example environment variables file.
 - `.env`: Environment variables file (should be created from `.env.example`).
 
-## Notes
-
-- Ensure that the captcha solver extension is correctly placed in the `extensions` directory.
-- The Facebook email and password should be kept secure and not shared publicly.
