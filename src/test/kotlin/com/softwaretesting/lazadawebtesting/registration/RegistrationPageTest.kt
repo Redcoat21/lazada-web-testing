@@ -3,8 +3,8 @@ package com.softwaretesting.lazadawebtesting.registration
 import com.softwaretesting.helper.DriverFactory
 import com.softwaretesting.helper.OAuthMethod
 import com.softwaretesting.helper.OtpMethod
-import com.softwaretesting.lazadawebtesting.FacebookContinueAsPage
-import com.softwaretesting.lazadawebtesting.FacebookRegistrationPage
+import com.softwaretesting.lazadawebtesting.facebook.FacebookContinueAsPage
+import com.softwaretesting.lazadawebtesting.facebook.FacebookRegistrationPage
 import com.softwaretesting.lazadawebtesting.MainPage
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv

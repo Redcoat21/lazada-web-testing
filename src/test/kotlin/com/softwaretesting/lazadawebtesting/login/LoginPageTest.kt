@@ -3,15 +3,12 @@ package com.softwaretesting.lazadawebtesting.login
 import com.softwaretesting.helper.DriverFactory
 import com.softwaretesting.helper.OAuthMethod
 import com.softwaretesting.helper.OtpMethod
-import com.softwaretesting.lazadawebtesting.FacebookContinueAsPage
-import com.softwaretesting.lazadawebtesting.FacebookRegistrationPage
 import com.softwaretesting.lazadawebtesting.MainPage
-import com.softwaretesting.lazadawebtesting.registration.RegistrationPage
+import com.softwaretesting.lazadawebtesting.facebook.FacebookContinueAsPage
+import com.softwaretesting.lazadawebtesting.facebook.FacebookRegistrationPage
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
-import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.testng.Assert
@@ -65,5 +62,42 @@ class LoginPageTest {
         loginPage.getOtp(OtpMethod.WHATSAPP)
 
         TODO("Unsolved, waiting for the OTP request block to expire")
+    }
+
+    /**
+     * TC_12 Login using valid facebook account.
+     */
+    @Test
+    fun loginWithValidFacebookAccount() {
+        loginPage.signUpWithOAuth(OAuthMethod.FACEBOOK)
+
+        WebDriverWait(driver, duration).until {
+            driver.windowHandles.size > 1
+        }
+        driver.switchTo().window(driver.windowHandles.last())
+
+        // Wait until it change window
+        wait.until(ExpectedConditions.urlContains("facebook.com"))
+        val facebookRegistrationPage = FacebookRegistrationPage(driver)
+
+        val facebookEmail = dotenv.get("FACEBOOK_EMAIL")
+        val facebookPassword = dotenv.get("FACEBOOK_PASSWORD")
+
+        println(facebookPassword)
+        facebookRegistrationPage.submitData(facebookEmail, facebookPassword)
+
+        // Wait until confirmation page. There's a chance that it will ask to solve captcha
+        WebDriverWait(driver, Duration.ofMinutes(1)).until(ExpectedConditions.urlContains("/privacy/consent/gdp"))
+
+        val facebookContinueAsPage = FacebookContinueAsPage(driver)
+        facebookContinueAsPage.clickContinueAsButton()
+
+        // Wait until the window close.
+        wait.until(ExpectedConditions.numberOfWindowsToBe(1))
+
+        driver.switchTo().window(driver.windowHandles.first())
+
+        Thread.sleep(30 * 1000)
+        Assert.assertTrue(driver.currentUrl?.contains("https://www.lazada.co.id/#") ?: false, "Should be redirected to the main page")
     }
 }

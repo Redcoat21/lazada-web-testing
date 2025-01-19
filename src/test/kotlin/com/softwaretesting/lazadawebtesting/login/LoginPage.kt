@@ -1,5 +1,6 @@
 package com.softwaretesting.lazadawebtesting.login
 
+import com.softwaretesting.helper.OAuthMethod
 import com.softwaretesting.helper.OtpMethod
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
@@ -19,6 +20,12 @@ class LoginPage(driver: WebDriver) {
 
     @FindBy(xpath = "(//div[@class='iweb-button-mask'])[last()]")
     lateinit var smsOtpButton: WebElement
+
+    @FindBy(xpath = "(//div[@class='index_module_buttonItem__8ea6d5ec'])[1]")
+    lateinit var googleButton: WebElement
+
+    @FindBy(xpath = "(//div[@class='index_module_buttonItem__8ea6d5ec'])[last()]")
+    lateinit var facebookButton: WebElement
 
     /**
      * Switch to phone number menu
@@ -44,6 +51,17 @@ class LoginPage(driver: WebDriver) {
         when (otpMethod) {
             OtpMethod.WHATSAPP -> whatsappOtpButton.click()
             OtpMethod.SMS -> smsOtpButton.click()
+        }
+    }
+
+    /**
+     * Sign up with OAuth method.
+     * @param oAuthMethod The OAuth method to be used, it should be either Google or Facebook.
+     */
+    fun signUpWithOAuth(oAuthMethod: OAuthMethod) {
+        when (oAuthMethod) {
+            OAuthMethod.GOOGLE -> googleButton.click()
+            OAuthMethod.FACEBOOK -> facebookButton.click()
         }
     }
 

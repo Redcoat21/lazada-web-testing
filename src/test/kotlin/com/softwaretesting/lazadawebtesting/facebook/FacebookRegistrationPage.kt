@@ -1,4 +1,4 @@
-package com.softwaretesting.lazadawebtesting
+package com.softwaretesting.lazadawebtesting.facebook
 
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
