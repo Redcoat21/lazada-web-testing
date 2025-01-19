@@ -1,10 +1,12 @@
 package com.softwaretesting.lazadawebtesting
 
 import com.softwaretesting.helper.DriverFactory
+import com.softwaretesting.helper.OAuthMethod
 import com.softwaretesting.helper.OtpMethod
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
 import org.openqa.selenium.By
+import org.openqa.selenium.NoSuchWindowException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -20,15 +22,17 @@ class RegistrationPageTest {
     private lateinit var driver: WebDriver
     private lateinit var registrationPage: RegistrationPage
     private lateinit var dotenv: Dotenv
+    private lateinit var duration: Duration
     private lateinit var wait: WebDriverWait
 
     @BeforeClass
     fun setUpClass() {
         driver = DriverFactory.createDriver()
         driver.manage().window().maximize()
-        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10))
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10))
 
-        wait = WebDriverWait(driver, Duration.ofSeconds(10))
+        duration = Duration.ofSeconds(10)
+        wait = WebDriverWait(driver, duration)
 
         dotenv = dotenv()
     }
@@ -96,5 +100,49 @@ class RegistrationPageTest {
         val errorToast = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".iweb-toast-wrap")))
         val expectedToastMessage = "You should agree to our Terms of Use and Privacy Policy."
         Assert.assertEquals(errorToast.text, expectedToastMessage, "Error message should be $expectedToastMessage")
+    }
+
+    /**
+     * TC_06 Register with valid facebook account.
+     */
+    @Test
+    fun registerWithValidFacebookAccount() {
+        registrationPage.checkTermsAndConditions()
+        registrationPage.signUpWithOAuth(OAuthMethod.FACEBOOK)
+
+        WebDriverWait(driver, duration).until {
+            driver.windowHandles.size > 1
+        }
+        driver.switchTo().window(driver.windowHandles.last())
+
+        // Wait until it change window
+        wait.until(ExpectedConditions.urlContains("facebook.com"))
+        val facebookRegistrationPage = FacebookRegistrationPage(driver)
+
+        val facebookEmail = dotenv.get("FACEBOOK_EMAIL")
+        val facebookPassword = dotenv.get("FACEBOOK_PASSWORD")
+
+        facebookRegistrationPage.submitData(facebookEmail, facebookPassword)
+
+        // Wait until confirmation page. There's a chance that it will ask to solve captcha
+        WebDriverWait(driver, Duration.ofMinutes(1)).until(ExpectedConditions.urlContains("/privacy/consent/gdp"))
+
+        val facebookContinueAsPage = FacebookContinueAsPage(driver)
+        facebookContinueAsPage.clickContinueAsButton()
+
+        // Wait until the window close.
+        wait.until(ExpectedConditions.numberOfWindowsToBe(1))
+
+        driver.switchTo().window(driver.windowHandles.first())
+
+        try {
+            // Try if captcha exist, then wait for it.
+            registrationPage.waitForCaptcha()
+        } catch(e: Exception) {
+            // Do nothing
+            e.printStackTrace()
+        }
+
+        Assert.assertTrue(driver.currentUrl?.contains("https://www.lazada.co.id/#") ?: false, "Should be redirected to the main page")
     }
 }
