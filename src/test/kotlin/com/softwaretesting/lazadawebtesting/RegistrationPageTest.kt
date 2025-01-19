@@ -83,4 +83,18 @@ class RegistrationPageTest {
         val expectedToastMessage = "Please enter a valid phone number."
         Assert.assertEquals(errorToast.text, expectedToastMessage, "Error message should be $expectedToastMessage")
     }
+
+    /**
+     * TC_03 Register without checking the terms and conditions.
+     */
+    @Test
+    fun registerWithoutCheckingTermsAndConditions() {
+        val phoneNumber = dotenv.get("LAZADA_VALID_REGISTRATION_PHONE_NUMBER")
+        registrationPage.enterPhoneNumber(phoneNumber)
+        registrationPage.getOtp(OtpMethod.WHATSAPP)
+
+        val errorToast = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".iweb-toast-wrap")))
+        val expectedToastMessage = "You should agree to our Terms of Use and Privacy Policy."
+        Assert.assertEquals(errorToast.text, expectedToastMessage, "Error message should be $expectedToastMessage")
+    }
 }
