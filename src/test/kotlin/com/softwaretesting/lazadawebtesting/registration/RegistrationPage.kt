@@ -1,4 +1,4 @@
-package com.softwaretesting.lazadawebtesting
+package com.softwaretesting.lazadawebtesting.registration
 
 import com.softwaretesting.helper.OAuthMethod
 import com.softwaretesting.helper.OtpMethod

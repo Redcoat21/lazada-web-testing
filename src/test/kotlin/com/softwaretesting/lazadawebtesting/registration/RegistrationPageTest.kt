@@ -1,8 +1,11 @@
-package com.softwaretesting.lazadawebtesting
+package com.softwaretesting.lazadawebtesting.registration
 
 import com.softwaretesting.helper.DriverFactory
 import com.softwaretesting.helper.OAuthMethod
 import com.softwaretesting.helper.OtpMethod
+import com.softwaretesting.lazadawebtesting.FacebookContinueAsPage
+import com.softwaretesting.lazadawebtesting.FacebookRegistrationPage
+import com.softwaretesting.lazadawebtesting.MainPage
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
 import org.openqa.selenium.By
@@ -152,7 +155,7 @@ class RegistrationPageTest {
      * TC_07 Register with registered facebook account.
      */
     @Test
-    fun registerWithRegisteredFacbookAccount() {
+    fun registerWithRegisteredFacebookAccount() {
         TODO("Unsolved, Test result is it will still succeed. Need further confirmation")
     }
 }
