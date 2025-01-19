@@ -6,7 +6,6 @@ import com.softwaretesting.helper.OtpMethod
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
 import org.openqa.selenium.By
-import org.openqa.selenium.NoSuchWindowException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -135,14 +134,25 @@ class RegistrationPageTest {
 
         driver.switchTo().window(driver.windowHandles.first())
 
+        TODO("Unsolved, Captcha should appear after finishing the facebook registration")
         try {
             // Try if captcha exist, then wait for it.
-            registrationPage.waitForCaptcha()
+            wait.until {
+                registrationPage.waitForCaptcha()
+            }
         } catch(e: Exception) {
             // Do nothing
             e.printStackTrace()
         }
 
         Assert.assertTrue(driver.currentUrl?.contains("https://www.lazada.co.id/#") ?: false, "Should be redirected to the main page")
+    }
+
+    /**
+     * TC_07 Register with registered facebook account.
+     */
+    @Test
+    fun registerWithRegisteredFacbookAccount() {
+        TODO("Unsolved, Test result is it will still succeed. Need further confirmation")
     }
 }
