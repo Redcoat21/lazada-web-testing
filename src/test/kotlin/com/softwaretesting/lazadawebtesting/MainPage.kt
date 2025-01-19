@@ -5,19 +5,13 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.FindBy
 import org.openqa.selenium.support.PageFactory
 
-// page_url = https://www.jetbrains.com/
+// page_url = https://www.lazada.co.id/#?
 class MainPage(driver: WebDriver) {
-    @FindBy(xpath = "//*[@data-test-marker='Developer Tools']")
-    lateinit var seeDeveloperToolsButton: WebElement
+    @FindBy(id = "anonSignup")
+    lateinit var signUpButton: WebElement
 
-    @FindBy(xpath = "//*[@data-test='suggestion-action']")
-    lateinit var findYourToolsButton: WebElement
-
-    @FindBy(xpath = "//div[@data-test='main-menu-item' and @data-test-marker = 'Developer Tools']")
-    lateinit var toolsMenu: WebElement
-
-    @FindBy(css = "[data-test='site-header-search-action']")
-    lateinit var searchButton: WebElement
+    @FindBy(id = "anonLogin")
+    lateinit var loginButton: WebElement
 
     init {
         PageFactory.initElements(driver, this)
