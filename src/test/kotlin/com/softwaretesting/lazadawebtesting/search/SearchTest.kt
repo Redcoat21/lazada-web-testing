@@ -55,4 +55,17 @@ class SearchTest {
         val productCards = driver.findElements(By.xpath("//div[@class='Bm3ON']//a[@title]"))
         Assert.assertListContains(productCards, { it.getAttribute("title")?.contains(keyword) ?: false }, "Product cards should contain the keyword.")
     }
+
+    /**
+     * TC_15 Search for an invalid item. (Item that does not exist)
+     */
+    @Test
+    fun searchInvalidItem() {
+        val keyword = "XYZ123Product"
+        mainPage.searchItem(keyword)
+
+        wait.until(ExpectedConditions.urlContains("q=$keyword"))
+
+        Thread.sleep(5 * 10 * 1000)
+    }
 }
