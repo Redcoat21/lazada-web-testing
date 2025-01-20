@@ -13,6 +13,18 @@ class MainPage(driver: WebDriver) {
     @FindBy(id = "anonLogin")
     lateinit var loginButton: WebElement
 
+    @FindBy(id = "q")
+    lateinit var searchInput: WebElement
+
+    /**
+     * Search for an item based on the given keyword.
+     * @param keyword The keyword to search for.
+     */
+    fun searchItem(keyword: String) {
+        searchInput.sendKeys(keyword)
+        searchInput.submit()
+    }
+
     init {
         PageFactory.initElements(driver, this)
     }
