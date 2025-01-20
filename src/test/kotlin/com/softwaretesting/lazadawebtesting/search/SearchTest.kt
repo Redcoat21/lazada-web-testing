@@ -2,7 +2,6 @@ package com.softwaretesting.lazadawebtesting.search
 
 import com.softwaretesting.helper.DriverFactory
 import com.softwaretesting.lazadawebtesting.MainPage
-import com.softwaretesting.lazadawebtesting.registration.RegistrationPage
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
 import org.openqa.selenium.By
@@ -67,5 +66,18 @@ class SearchTest {
         wait.until(ExpectedConditions.urlContains("q=$keyword"))
 
         Thread.sleep(5 * 10 * 1000)
+    }
+
+    /**
+     * TC_16 Search Suggestion appear for the given keyword.
+     */
+    @Test
+    fun searchSuggestionAppear() {
+        val keyword = "Phone"
+        mainPage.enterSearchKeyword(keyword)
+
+        val searchSuggestions = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("div[class*=\"suggest-item-content\"]")))
+
+        Assert.assertTrue(searchSuggestions.isNotEmpty(), "Search suggestion should appear.")
     }
 }

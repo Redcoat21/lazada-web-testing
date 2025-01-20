@@ -21,8 +21,16 @@ class MainPage(driver: WebDriver) {
      * @param keyword The keyword to search for.
      */
     fun searchItem(keyword: String) {
-        searchInput.sendKeys(keyword)
+        enterSearchKeyword(keyword)
         searchInput.submit()
+    }
+
+    /**
+     * Enter the search keyword in the search input.
+     * @param keyword The keyword to search for.
+     */
+    fun enterSearchKeyword(keyword: String) {
+        searchInput.sendKeys(keyword)
     }
 
     init {
