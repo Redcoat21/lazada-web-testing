@@ -44,7 +44,7 @@ class LoginPageTest {
 
         MainPage(driver).loginButton.click()
         loginPage = LoginPage(driver)
-        loginPage.switchToPhoneNumberMenu()
+//        loginPage.switchToPhoneNumberMenu()
     }
 
     @AfterClass
@@ -58,8 +58,12 @@ class LoginPageTest {
     @Test
     fun loginWithValidPhoneNumber() {
         val phoneNumber = dotenv.get("LAZADA_VALID_LOGIN_PHONE_NUMBER")
-        loginPage.enterPhoneNumber(phoneNumber)
-        loginPage.getOtp(OtpMethod.WHATSAPP)
+        val password = dotenv.get("LAZADA_VALID_LOGIN_PASSWORD")
+        loginPage.enterPhoneOrEmail(phoneNumber)
+        loginPage.enterPassword(password)
+        loginPage.clickLogInButton()
+
+        Thread.sleep(10000)
 
         TODO("Unsolved, waiting for the OTP request block to expire")
     }

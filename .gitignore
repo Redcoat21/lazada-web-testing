@@ -6,3 +6,6 @@
 
 .env
 tests/
+
+allure-results/
+target/

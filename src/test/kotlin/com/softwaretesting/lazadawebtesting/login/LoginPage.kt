@@ -15,6 +15,16 @@ class LoginPage(driver: WebDriver) {
     @FindBy(xpath = "(//input[@class='iweb-input'])[last()]")
     lateinit var phoneNumberInput: WebElement
 
+    @FindBy(xpath = "(//input[@class='iweb-input' and @type='text' and @placeholder='Please enter your Phone Number or Email'])[last()]")
+    lateinit var phoneOrEmailInput: WebElement
+
+
+    @FindBy(xpath = "(//input[@class='iweb-input' and @type='password'])[last()]")
+    lateinit var passwordInput: WebElement
+
+    @FindBy(xpath = "(//div[@class='iweb-button-mask'])[last()]")
+    lateinit var loginButton: WebElement
+
     @FindBy(xpath = "(//div[@class='iweb-button-mask'])[1]")
     lateinit var whatsappOtpButton: WebElement
 
@@ -42,6 +52,17 @@ class LoginPage(driver: WebDriver) {
         phoneNumberInput.sendKeys(phoneNumber)
     }
 
+    fun enterPhoneOrEmail(phoneEmail: String) {
+        phoneOrEmailInput.sendKeys(phoneEmail)
+    }
+
+    fun enterPassword(password: String) {
+        passwordInput.sendKeys(password)
+    }
+
+    fun clickLogInButton() {
+        loginButton.click()
+    }
 
     /**
      * Click the OTP button based on the given method. Clicking this button will submit the registration form.
