@@ -31,6 +31,14 @@ class CartHelper {
                 )
             )
             addToCartButton.click()
+
+            val closeButton = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("a.next-dialog-close")
+                )
+            )
+
+            closeButton.click()
         }
     }
 }
