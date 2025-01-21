@@ -65,7 +65,7 @@ class RemoveCartTest {
         // Click cart button to open cart page
         val cartButton = WebDriverWait(driver, Duration.ofMinutes(3)).until(
             ExpectedConditions.elementToBeClickable(
-                By.xpath("//div[@class='lzd-nav-cart']/a")
+                By.xpath("//span[@id='topActionCartNumber']/ancestor::a")
             )
         )
         cartButton.click()
