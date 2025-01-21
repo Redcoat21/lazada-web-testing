@@ -4,8 +4,11 @@ import io.github.bonigarcia.wdm.WebDriverManager
 import io.github.cdimascio.dotenv.dotenv
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.edge.EdgeDriver
+import org.openqa.selenium.edge.EdgeOptions
 import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.firefox.FirefoxOptions
 
 /**
  * A factory class to create a WebDriver instance.
@@ -26,15 +29,18 @@ class DriverFactory {
          */
         fun createDriver(): WebDriver {
             val dotenv = dotenv()
-            val useLocalBrowser = dotenv.get("USE_LOCAL_BROWSER").toBoolean()
             val browserType = getBrowserType(dotenv.get("BROWSER_TYPE"))
-
-            return getWebDriver(useLocalBrowser, browserType)
+            val driverSetUp = dotenv.get("SETUP_DRIVER")?.toBoolean()!!
+            if(driverSetUp) {
+                setupDriver(browserType)
+            }
+            return getWebDriver(browserType)
         }
 
         /**
          * Convert the browser type string to the BrowserType enum.
          * @param browserTypeString the browser type string to convert. Should have been retrieved from the .env file.
+         * @return the BrowserType enum.
          */
         private fun getBrowserType(browserTypeString: String): BrowserType {
             return when (browserTypeString.uppercase()) {
@@ -46,39 +52,64 @@ class DriverFactory {
         }
 
         /**
-         * Get the driver for the chosen browser using WebDriverManager, and it will use the locally installed browser.
+         * Set up the driver for the chosen browser, using WebDriverManager
          * @param browserType the browser type to use. (i.e. Chrome, Firefox, or Edge)
+         * @return the WebDriver for the chosen browser.
          */
-        private fun getLocalBrowser(browserType: BrowserType): WebDriver {
-            return when (browserType) {
-                BrowserType.CHROME -> WebDriverManager.chromedriver().create()
-                BrowserType.FIREFOX -> WebDriverManager.firefoxdriver().create()
-                BrowserType.EDGE -> WebDriverManager.edgedriver().create()
-            }
-        }
-
-        /**
-         * Get the driver for the chosen browser using Selenium's WebDriver, and it will use either the locally installed browser or the remote browser using Selenoid.
-         * @param browserType the browser type to use. (i.e. Chrome, Firefox, or Edge)
-         */
-        private fun getRemoteBrowser(browserType: BrowserType): WebDriver {
-            return when (browserType) {
-                BrowserType.CHROME -> ChromeDriver()
-                BrowserType.FIREFOX -> FirefoxDriver()
-                BrowserType.EDGE -> EdgeDriver()
+        private fun setupDriver(browserType: BrowserType) {
+            when (browserType) {
+                BrowserType.CHROME -> WebDriverManager.chromedriver().setup()
+                BrowserType.FIREFOX -> WebDriverManager.firefoxdriver().setup()
+                BrowserType.EDGE -> WebDriverManager.edgedriver().setup()
             }
         }
 
         /**
          * Get the driver for the chosen browser.
-         * @param useLocalBrowser whether to use the locally installed browser or the remote browser using Selenoid.
          * @param browserType the browser type to use. (i.e. Chrome, Firefox, or Edge)
+         * @return the WebDriver for the chosen browser.
          */
-        private fun getWebDriver(useLocalBrowser: Boolean, browserType: BrowserType): WebDriver {
-            return if (useLocalBrowser) {
-                getLocalBrowser(browserType)
-            } else {
-                getRemoteBrowser(browserType)
+        private fun getWebDriver(browserType: BrowserType): WebDriver {
+            return when (browserType) {
+                BrowserType.CHROME -> ChromeDriver(getChromeOptions())
+                BrowserType.FIREFOX -> FirefoxDriver(getFirefoxOptions())
+                BrowserType.EDGE -> EdgeDriver(getEdgeOptions())
+            }
+        }
+
+        /**
+         * Get the ChromeOptions for the ChromeDriver.
+         * @return the ChromeOptions for the ChromeDriver.
+         */
+        private fun getChromeOptions(): ChromeOptions {
+            return ChromeOptions().apply {
+                addArguments("--disable-blink-features=AutomationControlled")
+                setExperimentalOption("excludeSwitches", arrayOf("enable-automation"))
+                setExperimentalOption("useAutomationExtension", false)
+            }
+        }
+
+        /**
+         * Get the FirefoxOptions for the FirefoxDriver.
+         * @return the FirefoxOptions for the FirefoxDriver.
+         */
+        private fun getFirefoxOptions(): FirefoxOptions {
+            return FirefoxOptions().apply {
+                addPreference("dom.webdriver.enabled", false)
+                addPreference("useAutomationExtension", false)
+                addPreference("general.useragent.override", "your_custom_user_agent")
+            }
+        }
+
+        /**
+         * Get the EdgeOptions for the EdgeDriver.
+         * @return the EdgeOptions for the EdgeDriver.
+         */
+        private fun getEdgeOptions(): EdgeOptions {
+            return EdgeOptions().apply {
+                addArguments("--disable-blink-features=AutomationControlled")
+                setExperimentalOption("excludeSwitches", arrayOf("enable-automation"))
+                setExperimentalOption("useAutomationExtension", false)
             }
         }
     }
