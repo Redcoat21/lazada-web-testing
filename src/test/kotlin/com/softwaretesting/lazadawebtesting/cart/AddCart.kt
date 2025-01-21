@@ -1,7 +1,10 @@
 package com.softwaretesting.lazadawebtesting.cart
 
 import com.softwaretesting.helper.DriverFactory
+import com.softwaretesting.helper.LoginHelper
+import com.softwaretesting.helper.LoginMethod
 import com.softwaretesting.lazadawebtesting.MainPage
+import com.softwaretesting.lazadawebtesting.login.LoginPage
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
 import org.openqa.selenium.By
@@ -11,6 +14,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
 import org.testng.Assert
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.time.Duration
 
@@ -40,6 +44,16 @@ class AddCartTest {
     @AfterClass
     fun teardownClass() {
         driver.quit()
+    }
+
+    @BeforeMethod
+    fun setUpMethod() {
+        val url = "https://lazada.co.id/#"
+        driver.get(url)
+
+        MainPage(driver).loginButton.click()
+        LoginHelper.login(LoginMethod.PASSWORD, driver, true)
+        Thread.sleep(5000)
     }
 
     /**
@@ -79,5 +93,7 @@ class AddCartTest {
 
         // Assert that the quantity has increased by 1
         Assert.assertEquals(newQuantity, initialQuantity + 1, "Cart quantity should increase by 1")
+
+        Thread.sleep(10000)
     }
 }

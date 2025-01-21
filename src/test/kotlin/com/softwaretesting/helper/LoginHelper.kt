@@ -15,9 +15,9 @@ class LoginHelper {
          * @param driver The WebDriver instance.
          * @throws IllegalArgumentException If the login method is invalid.
          */
-        fun login(loginMethod: LoginMethod, driver: WebDriver) {
+        fun login(loginMethod: LoginMethod, driver: WebDriver, valid: Boolean) {
             when(loginMethod) {
-                LoginMethod.PASSWORD -> loginUsingPhoneNumberAndPassword(driver)
+                LoginMethod.PASSWORD -> loginUsingPhoneNumberAndPassword(driver, valid)
                 LoginMethod.FACEBOOK -> loginUsingFacebook(driver)
                 else -> throw IllegalArgumentException("Invalid login method")
             }
@@ -27,12 +27,20 @@ class LoginHelper {
          * Login using phone number and OTP.
          * @param driver The WebDriver instance.
          */
-        private fun loginUsingPhoneNumberAndPassword(driver: WebDriver) {
+        private fun loginUsingPhoneNumberAndPassword(driver: WebDriver, valid: Boolean) {
             val inputs = driver.findElements(By.cssSelector(".iweb-input"))
 
             val (phoneNumberInput, passwordInput) = inputs
-            val phoneNumber = dotenv().get("LAZADA_VALID_LOGIN_PHONE_NUMBER")
-            val password = dotenv().get("LAZADA_VALID_LOGIN_PASSWORD")
+            var phoneNumber = "";
+            var password = "";
+            if (valid) {
+                phoneNumber = dotenv().get("LAZADA_VALID_LOGIN_PHONE_NUMBER")
+                password = dotenv().get("LAZADA_VALID_LOGIN_PASSWORD")
+            }
+            else{
+                phoneNumber = dotenv().get("LAZADA_INVALID_LOGIN_PHONE_NUMBER")
+                password = dotenv().get("LAZADA_INVALID_LOGIN_PASSWORD")
+            }
 
             phoneNumberInput.sendKeys(phoneNumber)
             passwordInput.sendKeys(password)

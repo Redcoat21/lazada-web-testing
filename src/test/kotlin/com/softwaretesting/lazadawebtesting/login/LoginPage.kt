@@ -18,7 +18,6 @@ class LoginPage(driver: WebDriver) {
     @FindBy(xpath = "(//input[@class='iweb-input' and @type='text' and @placeholder='Please enter your Phone Number or Email'])[last()]")
     lateinit var phoneOrEmailInput: WebElement
 
-
     @FindBy(xpath = "(//input[@class='iweb-input' and @type='password'])[last()]")
     lateinit var passwordInput: WebElement
 

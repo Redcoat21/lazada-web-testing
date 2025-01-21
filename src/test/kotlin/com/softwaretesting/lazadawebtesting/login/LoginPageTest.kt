@@ -55,14 +55,27 @@ class LoginPageTest {
     }
 
     /**
-     * TC_08 Login using phone number and OTP.
+     * TC_08 Login using phone number and Password.
      */
     @Test
     fun loginWithValidPhoneNumber() {
-        LoginHelper.login(LoginMethod.PASSWORD, driver)
+        LoginHelper.login(LoginMethod.PASSWORD, driver, true)
         // Give time to solve OTP
         val accountTrigger = WebDriverWait(driver, Duration.ofMinutes(5)).until(ExpectedConditions.visibilityOfElementLocated(By.id("myAccountTrigger")))
         Assert.assertTrue(accountTrigger.text.isNotEmpty())
+    }
+
+    /**
+     * TC_09 Login  using invalid phone number and password
+     */
+    @Test
+    fun loginWithInvalidPhoneNumber() {
+        LoginHelper.login(LoginMethod.PASSWORD, driver, false)
+
+        val errorToast = WebDriverWait(driver, Duration.ofMinutes(5)).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".iweb-toast-wrap")))
+        val expectedToastMessage = "Akun atau kata sandi tidak valid."
+        Assert.assertEquals(errorToast.text, expectedToastMessage, "Error message should be $expectedToastMessage")
+
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.softwaretesting.lazadawebtesting.cart
 
 import com.softwaretesting.helper.DriverFactory
+import com.softwaretesting.helper.LoginHelper
+import com.softwaretesting.helper.LoginMethod
 import com.softwaretesting.lazadawebtesting.MainPage
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
@@ -11,6 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
 import org.testng.Assert
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.time.Duration
 
@@ -42,11 +45,30 @@ class RemoveCartTest {
         driver.quit()
     }
 
+    @BeforeMethod
+    fun setUpMethod() {
+        val url = "https://lazada.co.id/#"
+        driver.get(url)
+
+        MainPage(driver).loginButton.click()
+        LoginHelper.login(LoginMethod.PASSWORD, driver, true)
+        Thread.sleep(5000)
+    }
+
     /**
      * TC_18 Remove item from cart.
      */
     @Test
     fun removeItemFromCart() {
+
+        // Click cart button to open cart page
+        val cartButton = WebDriverWait(driver, Duration.ofMinutes(3)).until(
+            ExpectedConditions.elementToBeClickable(
+                By.xpath("//div[@class='lzd-nav-cart']/a")
+            )
+        )
+        cartButton.click()
+
         // Get the first product name before removing
         val firstProductElement = wait.until(
             ExpectedConditions.presenceOfElementLocated(
@@ -54,14 +76,6 @@ class RemoveCartTest {
             )
         )
         val firstProductName = firstProductElement.text
-
-        // Click cart button to open cart page
-        val cartButton = wait.until(
-            ExpectedConditions.elementToBeClickable(
-                By.xpath("//div[@class='lzd-nav-cart']/a")
-            )
-        )
-        cartButton.click()
 
         // Wait for the cart page to load and get the first product name in cart
         val cartProductElement = wait.until(
