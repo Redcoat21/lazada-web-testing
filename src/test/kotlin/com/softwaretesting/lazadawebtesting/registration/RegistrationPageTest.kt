@@ -1,7 +1,7 @@
 package com.softwaretesting.lazadawebtesting.registration
 
 import com.softwaretesting.helper.DriverFactory
-import com.softwaretesting.helper.OAuthMethod
+import com.softwaretesting.helper.LoginMethod
 import com.softwaretesting.helper.OtpMethod
 import com.softwaretesting.lazadawebtesting.facebook.FacebookContinueAsPage
 import com.softwaretesting.lazadawebtesting.facebook.FacebookRegistrationPage
@@ -110,7 +110,7 @@ class RegistrationPageTest {
     @Test
     fun registerWithValidFacebookAccount() {
         registrationPage.checkTermsAndConditions()
-        registrationPage.signUpWithOAuth(OAuthMethod.FACEBOOK)
+        registrationPage.signUpWithOAuth(LoginMethod.FACEBOOK)
 
         WebDriverWait(driver, duration).until {
             driver.windowHandles.size > 1

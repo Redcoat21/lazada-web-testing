@@ -1,6 +1,7 @@
 package com.softwaretesting.helper
 
-enum class OAuthMethod {
+enum class LoginMethod {
     FACEBOOK,
-    GOOGLE
+    GOOGLE,
+    PASSWORD
 }

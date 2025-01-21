@@ -1,13 +1,14 @@
 package com.softwaretesting.lazadawebtesting.login
 
 import com.softwaretesting.helper.DriverFactory
-import com.softwaretesting.helper.OAuthMethod
-import com.softwaretesting.helper.OtpMethod
+import com.softwaretesting.helper.LoginHelper
+import com.softwaretesting.helper.LoginMethod
 import com.softwaretesting.lazadawebtesting.MainPage
 import com.softwaretesting.lazadawebtesting.facebook.FacebookContinueAsPage
 import com.softwaretesting.lazadawebtesting.facebook.FacebookRegistrationPage
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
+import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -16,6 +17,7 @@ import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+import java.net.URL
 import java.time.Duration
 
 class LoginPageTest {
@@ -57,15 +59,10 @@ class LoginPageTest {
      */
     @Test
     fun loginWithValidPhoneNumber() {
-        val phoneNumber = dotenv.get("LAZADA_VALID_LOGIN_PHONE_NUMBER")
-        val password = dotenv.get("LAZADA_VALID_LOGIN_PASSWORD")
-        loginPage.enterPhoneOrEmail(phoneNumber)
-        loginPage.enterPassword(password)
-        loginPage.clickLogInButton()
-
-        Thread.sleep(10000)
-
-        TODO("Unsolved, waiting for the OTP request block to expire")
+        LoginHelper.login(LoginMethod.PASSWORD, driver)
+        // Give time to solve OTP
+        val accountTrigger = WebDriverWait(driver, Duration.ofMinutes(5)).until(ExpectedConditions.visibilityOfElementLocated(By.id("myAccountTrigger")))
+        Assert.assertTrue(accountTrigger.text.isNotEmpty())
     }
 
     /**
@@ -73,7 +70,7 @@ class LoginPageTest {
      */
     @Test
     fun loginWithValidFacebookAccount() {
-        loginPage.signUpWithOAuth(OAuthMethod.FACEBOOK)
+        loginPage.signUpWithOAuth(LoginMethod.FACEBOOK)
 
         WebDriverWait(driver, duration).until {
             driver.windowHandles.size > 1
@@ -101,7 +98,6 @@ class LoginPageTest {
 
         driver.switchTo().window(driver.windowHandles.first())
 
-        Thread.sleep(30 * 1000)
         Assert.assertTrue(driver.currentUrl?.contains("https://www.lazada.co.id/#") ?: false, "Should be redirected to the main page")
     }
 }

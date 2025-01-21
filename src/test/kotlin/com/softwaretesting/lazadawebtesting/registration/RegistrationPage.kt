@@ -1,6 +1,6 @@
 package com.softwaretesting.lazadawebtesting.registration
 
-import com.softwaretesting.helper.OAuthMethod
+import com.softwaretesting.helper.LoginMethod
 import com.softwaretesting.helper.OtpMethod
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
@@ -60,12 +60,13 @@ class RegistrationPage(driver: WebDriver) {
 
     /**
      * Sign up with OAuth method.
-     * @param oAuthMethod The OAuth method to be used, it should be either Google or Facebook.
+     * @param loginMethod The OAuth method to be used, it should be either Google or Facebook.
      */
-    fun signUpWithOAuth(oAuthMethod: OAuthMethod) {
-        when (oAuthMethod) {
-            OAuthMethod.GOOGLE -> googleButton.click()
-            OAuthMethod.FACEBOOK -> facebookButton.click()
+    fun signUpWithOAuth(loginMethod: LoginMethod) {
+        when (loginMethod) {
+            LoginMethod.GOOGLE -> googleButton.click()
+            LoginMethod.FACEBOOK -> facebookButton.click()
+            else -> throw IllegalArgumentException("Invalid OAuth method")
         }
     }
 
