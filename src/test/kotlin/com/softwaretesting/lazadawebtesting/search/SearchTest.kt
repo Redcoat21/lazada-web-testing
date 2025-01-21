@@ -60,12 +60,12 @@ class SearchTest {
      */
     @Test
     fun searchInvalidItem() {
-        val keyword = "XYZ123Product"
+        val keyword = "XXXXXX"
         mainPage.searchItem(keyword)
 
         wait.until(ExpectedConditions.urlContains("q=$keyword"))
-
-        Thread.sleep(5 * 10 * 1000)
+        val productCards = driver.findElements(By.xpath("//div[@class='Bm3ON']//a[@title]"))
+        Assert.assertTrue(productCards.isEmpty(), "Product cards should be empty.")
     }
 
     /**
